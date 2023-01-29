@@ -47,7 +47,14 @@ class ViewController: UIViewController {
     
     func setQuiz() {
         progressbarView.progress = Float(attemptCount * 100 / maxAttempt) / 100.0
-        print(Float(attemptCount / maxAttempt))
+//        TODO:
+        /*
+         TODO: надо бы сделать
+            1) structure вместо class
+            2) maxAttempt убрать
+            3) sender.currentTitle! == "True" - может проще результат сразу хранить в строке?
+            4) Структуру вопросов в отдельный файл (гуд практис)
+         */
         if attemptCount == maxAttempt {
             trueButtonView.isHidden = true
             falseButtonView.isHidden = true
