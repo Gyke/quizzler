@@ -8,18 +8,6 @@
 
 import UIKit
 
-class iQuiz {
-    let question : String
-    let answer   : Bool
-    let price    : Int
-    
-    init(question: String, answer: Bool, price: Int = 1) {
-        self.question = question
-        self.answer = answer
-        self.price = price
-    }
-}
-
 class ViewController: UIViewController {
     
     @IBOutlet weak var progressbarView: UIProgressView!
@@ -28,39 +16,30 @@ class ViewController: UIViewController {
     @IBOutlet weak var questionLabelView: UILabel!
     
     let quiz = [
-        iQuiz(question: "now is 6:82 AM", answer: false),
-        iQuiz(question: "two plus four is equal six", answer: true),
-        iQuiz(question: "you are not a robot", answer: true),
+        Quiz(q: "now is 6:82 AM", a: "False"),
+        Quiz(q: "two plus four is equal six", a: "True"),
+        Quiz(q: "you are not a robot", a: "True"),
     ]
     
     var currentScore = 0
     var attemptCount = 0
     var maxAttempt = 0
     
-    var currentAnswer = false
+    var currentAnswer = "False"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        maxAttempt = quiz.count
         setQuiz()
     }
     
     func setQuiz() {
-        progressbarView.progress = Float(attemptCount * 100 / maxAttempt) / 100.0
-//        TODO:
-        /*
-         TODO: надо бы сделать
-            1) structure вместо class
-            2) maxAttempt убрать
-            3) sender.currentTitle! == "True" - может проще результат сразу хранить в строке?
-            4) Структуру вопросов в отдельный файл (гуд практис)
-         */
-        if attemptCount == maxAttempt {
+        progressbarView.progress = Float(attemptCount * 100 / quiz.count) / 100.0
+        if attemptCount == quiz.count {
             trueButtonView.isHidden = true
             falseButtonView.isHidden = true
             progressbarView.isHidden = true
             
-            questionLabelView.text = "Congratulations!\nYour score: \(self.currentScore)"
+            questionLabelView.text = "Congratulations!\nYour score: \(self.currentScore) / \(self.attemptCount) points."
             return
         }
         let tmp = quiz[self.attemptCount]
@@ -68,15 +47,8 @@ class ViewController: UIViewController {
         self.currentAnswer = tmp.answer
     }
     
-    func checkAnswer(answer: Bool) -> Bool {
-        if self.currentAnswer == answer {
-            return true
-        }
-        return false
-    }
-    
     @IBAction func answerButtonPressed(_ sender: UIButton) {
-        if checkAnswer(answer: sender.currentTitle! == "True") {
+        if sender.currentTitle! == self.currentAnswer {
             currentScore += 1
         }
         attemptCount += 1
