@@ -15,64 +15,61 @@ class ViewController: UIViewController {
     @IBOutlet weak var trueButtonView: UIButton!
     @IBOutlet weak var tryAgainViewButton: UIButton!
     @IBOutlet weak var questionLabelView: UILabel!
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setQuiz()
-        trueButtonView.layer.cornerRadius = 25
-        falseButtonView.layer.cornerRadius = 25
-    }
     
+    let greenColor = UIColor.init(red: 101, green: 200, blue: 85, alpha: 0.0025)
+    let redColor = UIColor.init(red: 200, green: 113, blue: 62, alpha: 0.0025)
+    
+    var buttons: [UIButton] = []
     var quizBrain = QuizBrain()
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        buttons += [trueButtonView, falseButtonView]
+        setQuiz()
+        buttons.forEach({ $0.layer.cornerRadius = 25 })
+    }
+    
     func setQuiz() {
-        progressbarView.progress = Float((quizBrain.answerNumber + 1) * 100 / quizBrain.quiz.count) / 100.0
+        progressbarView.progress = Float((quizBrain.answerNumber + 1) * 100 / quizBrain.questions.count) / 100.0
 
-        if quizBrain.answerNumber == quizBrain.quiz.count {
-            trueButtonView.isHidden = true
-            falseButtonView.isHidden = true
+        if quizBrain.answerNumber == quizBrain.questions.count {
+            buttons.forEach({ $0.isHidden = true })
             questionLabelView.text = "Congratulations!\nYour score: \(quizBrain.score) / \(quizBrain.answerNumber) points."
             tryAgainViewButton.isHidden = false
             return
         }
 
-        let tmp = quizBrain.quiz[quizBrain.answerNumber]
+        let tmp = quizBrain.questions[quizBrain.answerNumber]
 
-        self.questionLabelView.text = tmp.question
+        questionLabelView.text = tmp.question
         quizBrain.currentAnswer = tmp.answer
-
-        trueButtonView.backgroundColor = UIColor.clear
-        trueButtonView.isEnabled = true
         
-        falseButtonView.backgroundColor = UIColor.clear
-        falseButtonView.isEnabled = true
+        self.buttons.forEach({
+            $0.backgroundColor = UIColor.clear
+            $0.isEnabled = true
+        })
     }
     
     @IBAction func tryAgainPressed(_ sender: UIButton) {
         sender.isHidden = true
         sender.backgroundColor = UIColor.clear
-        trueButtonView.isHidden = false
-        falseButtonView.isHidden = false
-
+        buttons.forEach({ $0.isHidden = false })
         quizBrain.resetVariables()
-        self.setQuiz()
+        setQuiz()
     }
     
     @IBAction func answerButtonPressed(_ sender: UIButton) {
-        trueButtonView.isEnabled = false
-        falseButtonView.isEnabled = false
-        if sender.currentTitle! == quizBrain.currentAnswer {
+        buttons.forEach({ $0.isEnabled = false })
+        if quizBrain.checkAnswer(sender.currentTitle!) {
             quizBrain.score += 1
-            sender.backgroundColor = UIColor.init(red: 101, green: 200, blue: 85, alpha: 0.0025)
+            sender.backgroundColor = greenColor
         } else {
-            sender.backgroundColor = UIColor.init(red: 200, green: 113, blue: 62, alpha: 0.0025)
+            sender.backgroundColor = redColor
         }
+
         quizBrain.answerNumber += 1
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in
-            self.setQuiz()
-        }
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { _ in self.setQuiz() }
     }
 
 
 }
-
