@@ -38,4 +38,12 @@ struct QuizBrain {
     func checkAnswer(_ userAnswer: String) -> Bool {
         return questions[self.answerNumber].answer == userAnswer ? true : false
     }
+    
+    func getProgress() -> Float {
+        return Float((answerNumber + 1) * 100 / questions.count) / 100.0
+    }
+    
+    func getQuestion() -> Question {
+        return questions[answerNumber]
+    }
 }

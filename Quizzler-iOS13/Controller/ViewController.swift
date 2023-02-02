@@ -30,19 +30,16 @@ class ViewController: UIViewController {
     }
     
     func setQuiz() {
-        progressbarView.progress = Float((quizBrain.answerNumber + 1) * 100 / quizBrain.questions.count) / 100.0
+        progressbarView.progress = quizBrain.getProgress()
 
         if quizBrain.answerNumber == quizBrain.questions.count {
-            buttons.forEach({ $0.isHidden = true })
-            questionLabelView.text = "Congratulations!\nYour score: \(quizBrain.score) / \(quizBrain.answerNumber) points."
-            tryAgainViewButton.isHidden = false
+            quizComplete()
             return
         }
 
-        let tmp = quizBrain.questions[quizBrain.answerNumber]
-
-        questionLabelView.text = tmp.question
-        quizBrain.currentAnswer = tmp.answer
+        let question = quizBrain.getQuestion()
+        questionLabelView.text = question.question
+        quizBrain.currentAnswer = question.answer
         
         self.buttons.forEach({
             $0.backgroundColor = UIColor.clear
@@ -50,9 +47,16 @@ class ViewController: UIViewController {
         })
     }
     
+    func quizComplete() {
+        buttons.forEach({ $0.isHidden = true })
+        questionLabelView.text = "Congratulations!\n"
+        + "Your score: \(quizBrain.score) / \(quizBrain.answerNumber) points."
+
+        tryAgainViewButton.isHidden = false
+    }
+    
     @IBAction func tryAgainPressed(_ sender: UIButton) {
         sender.isHidden = true
-        sender.backgroundColor = UIColor.clear
         buttons.forEach({ $0.isHidden = false })
         quizBrain.resetVariables()
         setQuiz()
